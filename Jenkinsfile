@@ -24,6 +24,7 @@ pipeline {
 
         stage('deploy') {
             steps {
+                sh"mvn dependency:tree"
                 sh "mvn package"
             }
         }
