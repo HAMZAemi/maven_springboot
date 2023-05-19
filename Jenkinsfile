@@ -54,11 +54,11 @@ pipeline {
             }
         }
 
-        stage('Docker deploy'){
-            steps {
-                sh 'docker run -itd -p 8082:8080 anvbhaskar/springboot:0.0.3'
-            }
-        }
+       stage('Deploy') {
+    steps {
+        sh "docker run -p 8084:8080 hamzaemi/hamza_el:${BUILD_NUMBER}"
+    }
+}
 
 
         stage('Archving') {
