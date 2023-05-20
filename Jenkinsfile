@@ -53,7 +53,6 @@ pipeline {
         stage('Docker Push'){
             steps {
                 sh "docker push hamzaemi/hamza_el:${BUILD_NUMBER}"
-                    sh "sleep 60" // pause d'une minute
 
             }
         }
@@ -61,6 +60,8 @@ pipeline {
        stage('Deploy') {
     steps {
         sh "docker run -p 8099:8080 hamzaemi/hamza_el:${BUILD_NUMBER}"
+        sh "sleep 60" // pause d'une minute
+
     }
 }
 
