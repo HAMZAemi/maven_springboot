@@ -12,7 +12,8 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh "mvn test site"
+               sh 'mvn test'
+
             }
 
              post {
