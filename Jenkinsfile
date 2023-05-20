@@ -53,6 +53,8 @@ pipeline {
         stage('Docker Push'){
             steps {
                 sh "docker push hamzaemi/hamza_el:${BUILD_NUMBER}"
+                    sh "sleep 60" // pause d'une minute
+
             }
         }
 
