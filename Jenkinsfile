@@ -59,8 +59,8 @@ pipeline {
 
        stage('Deploy') {
     steps {
-        sh "docker run -p 8099:8080 hamzaemi/hamza_el:${BUILD_NUMBER}"
-        sh "sleep 60" // pause d'une minute
+        sh "docker run -itd -p 8099:8080 hamzaemi/hamza_el:${BUILD_NUMBER}"
+    
 
     }
 }
