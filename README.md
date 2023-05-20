@@ -35,7 +35,7 @@ Spring Boot Point Of Sales System- A multi tier system that allows a business ow
 ## Tech/framework used: 
 
 Spring Boot,Java,Maven,H2,Bootstrap,Jenkins,Docker,Docker_jenkins_pipeline 
-![2](http://localhost:8099/)
+![1](http://localhost:8099/)
 
 
 
