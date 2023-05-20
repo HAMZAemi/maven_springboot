@@ -6,11 +6,11 @@ Spring Boot Point Of Sales System- A multi tier system that allows a business ow
 
 ## Live Demo:
 
-https://spring-boot-point-of-sales.herokuapp.com/
+
 
 ## Tech/framework used
 
-Spring Boot,Java,Maven,MYSQL,Bootstrap
+Spring Boot,Java,Maven,H2,Bootstrap,Jenkins,Docker,Docker_jenkins_pipeline 
 
 
 
