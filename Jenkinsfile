@@ -7,12 +7,12 @@ pipeline {
         stage('Compile and Clean') {
             steps {
 
-                sh "mvn clean compile"
+                sh "/opt/apache-maven-3.6.3/bin/mvn clean compile"
             }
         }
         stage('Test') {
             steps {
-               sh 'mvn test'
+               sh '/opt/apache-maven-3.6.3/bin/mvn test'
 
             }
 
@@ -25,8 +25,8 @@ pipeline {
 
         stage('deploy') {
             steps {
-                sh"mvn dependency:tree"
-                sh "mvn package"
+                sh"/opt/apache-maven-3.6.3/bin/mvn dependency:tree"
+                sh "/opt/apache-maven-3.6.3/bin/mvn package"
             }
         }
 
