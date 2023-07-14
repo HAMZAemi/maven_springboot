@@ -1,7 +1,11 @@
 pipeline {
     agent any
      environment {
-    DOCKERHUB_CREDENTIALS = credentials('stage')
+        DOCKERHUB_CREDENTIALS = credentials('stage')
+        HARBOR_USERNAME = credentials('admin')
+        HARBOR_PASSWORD = credentials('Stage2023')
+        HARBOR_REGISTRY = 'http://192.99.35.61'
+        HARBOR_PROJECT = 'centos1/exosdata'
     }
     stages {
         stage('Compile and Clean') {
@@ -29,7 +33,17 @@ pipeline {
                 sh "/opt/apache-maven-3.6.3/bin/mvn package"
             }
         }
-
+stage('Build Docker image') {
+            steps {
+                sh "docker build -t ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/IMAGE:${BUILD_NUMBER} ."
+            }
+        }
+        stage('Push Docker image to Harbor') {
+            steps {
+                sh "echo ${HARBOR_PASSWORD} | docker login -u ${HARBOR_USERNAME} --password-stdin ${HARBOR_REGISTRY}"
+                sh "docker push ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/IMAGE:${BUILD_NUMBER}"
+            }
+        }
 
         stage('Build Docker image'){
             steps {
