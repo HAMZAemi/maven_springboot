@@ -27,8 +27,9 @@ pipeline {
             steps {
                 sh "/opt/apache-maven-3.6.3/bin/mvn package"
                 sh "docker build -t ${IMAGE_NAME} ."
-                sh "echo ${HARBOR_PASSWORD} | docker login -u ${HARBOR_USERNAME} --password-stdin ${HARBOR_REGISTRY}"
-                sh "docker push ${IMAGE_NAME}"
+                sh "docker tag ${IMAGE_NAME} ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
+                sh "docker login -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD} ${HARBOR_REGISTRY}"
+                sh "docker push ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
             }
             post {
                 always {
