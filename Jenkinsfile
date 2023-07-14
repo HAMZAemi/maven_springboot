@@ -28,7 +28,7 @@ pipeline {
                 sh "/opt/apache-maven-3.6.3/bin/mvn package"
                 sh "docker build -t ${IMAGE_NAME} ."
                 sh "docker tag ${IMAGE_NAME} anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER} "
-                sh "docker login -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD} ${HARBOR_REGISTRY}"
+                sh "docker login --username ${HARBOR_USERNAME} --password-stdin --disable-legacy-registry ${HARBOR_REGISTRY}"
                 sh "docker tag anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER} ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
                 sh "docker push ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
             }
