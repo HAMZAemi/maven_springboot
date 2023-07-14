@@ -6,6 +6,7 @@ pipeline {
         HARBOR_REGISTRY = '192.99.35.61'
         HARBOR_PROJECT = 'centos1/exosdata'
         IMAGE_NAME = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
+        DOCKER_CONFIG = "${WORKSPACE}/.docker"
     }
     stages {
         stage('Compile and Clean') {
@@ -28,7 +29,8 @@ pipeline {
                 sh "/opt/apache-maven-3.6.3/bin/mvn package"
                 sh "docker build -t ${IMAGE_NAME} ."
                 sh "docker tag ${IMAGE_NAME} anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER} "
-                sh "echo ${HARBOR_PASSWORD} | docker login --username ${HARBOR_USERNAME} --password-stdin ${HARBOR_REGISTRY} -t -"
+                sh "echo ${HARBOR_PASSWORD} > ${DOCKER_CONFIG}/password && chmod 0600 ${DOCKER_CONFIG}/password"
+                sh "docker login --username ${HARBOR_USERNAME} --password-file ${DOCKER_CONFIG}/password ${HARBOR_REGISTRY}"
                 sh "docker tag anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER} ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
                 sh "docker push --disable-legacy-registry ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
             }
