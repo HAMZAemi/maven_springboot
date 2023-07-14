@@ -33,7 +33,7 @@ pipeline {
                 sh "/opt/apache-maven-3.6.3/bin/mvn package"
             }
         }
-stage('Build Docker image') {
+stage('Build Docker image to Harbor') {
             steps {
                 sh "docker build -t ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/IMAGE:${BUILD_NUMBER} ."
             }
