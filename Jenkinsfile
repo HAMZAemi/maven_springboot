@@ -2,8 +2,8 @@ pipeline {
     agent any
      environment {
         DOCKERHUB_CREDENTIALS = credentials('stage')
-        HARBOR_USERNAME = credentials('admin')
-        HARBOR_PASSWORD = credentials('Stage2023')
+        HARBOR_USERNAME = 'admin'
+        HARBOR_PASSWORD = 'Stage2023'
         HARBOR_REGISTRY = 'http://192.99.35.61'
         HARBOR_PROJECT = 'centos1/exosdata'
     }
