@@ -25,7 +25,7 @@ pipeline {
       }
       stage('Copy Jar') {
          steps {
-            sh 'cp target/*.jar .'
+            sh 'cp target/Inventory-Management-0.0.1-SNAPSHOT.jar'
          }
       }
       stage('Build') {
