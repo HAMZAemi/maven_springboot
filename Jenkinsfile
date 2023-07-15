@@ -3,10 +3,9 @@ pipeline {
     environment {
         HARBOR_USERNAME = 'admin'
         HARBOR_PASSWORD = 'Stage2023'
-        HARBOR_REGISTRY = '192.99.35.61'
-        HARBOR_PROJECT = 'centos1/exosdata'
-        IMAGE_NAME = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
-        DOCKER_CONFIG = "${WORKSPACE}/.docker"
+        DOCKER_REGISTRY = '192.99.35.61'
+        IMAGE_NAME = "exosdata" // Remplacez par le nom de votre image Docker
+      IMAGE_TAG = "latest"
     }
     stages {
         stage('Compile and Clean') {
@@ -24,21 +23,23 @@ pipeline {
                 }
             }
         }
-        stage('Build and Deploy Docker image to Harbor') {
-            steps {
-                sh "/opt/apache-maven-3.6.3/bin/mvn package"
-                sh "docker build -t ${IMAGE_NAME} ."
-                sh "docker tag ${IMAGE_NAME} anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER} "
-                sh "echo ${HARBOR_PASSWORD} > ${DOCKER_CONFIG}/password && chmod 0600 ${DOCKER_CONFIG}/password"
-                sh "docker login --username ${HARBOR_USERNAME} --password-file ${DOCKER_CONFIG}/password ${HARBOR_REGISTRY}"
-                sh "docker tag anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER} ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
-                sh "docker push --disable-legacy-registry ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/image:${BUILD_NUMBER}"
+      stage('Build') {
+         steps {
+            script {
+               sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ." // Construire l'image Docker
+               sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" // Ajouter une étiquette à l'image Docker
             }
-            post {
-                always {
-                    archiveArtifacts '**/target/*.jar'
-                }
+         }
+      }
+      stage('Push') {
+         steps {
+            script {
+               withCredentials([usernamePassword(credentialsId: 'stage', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]) {
+                  sh "docker login ${DOCKER_REGISTRY} -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD}" // Se connecter au référentiel Harbor avec les informations d'identification
+                  sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" // Pousser l'image Docker vers le référentiel Harbor
+               }
             }
-        }
+         }
+      }
     }
 }
