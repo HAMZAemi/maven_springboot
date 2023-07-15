@@ -1,28 +1,33 @@
 pipeline {
-    agent any
-    environment {
-        HARBOR_USERNAME = 'admin'
-        HARBOR_PASSWORD = 'Stage2023'
-        DOCKER_REGISTRY = '192.99.35.61'
-        IMAGE_NAME = "exosdata" // Remplacez par le nom de votre image Docker
+   agent any
+   environment {
+      HARBOR_USERNAME = 'admin'
+      HARBOR_PASSWORD = 'Stage2023'
+      DOCKER_REGISTRY = '192.99.35.61'
+      IMAGE_NAME = "exosdata"
       IMAGE_TAG = "latest"
-    }
-    stages {
-        stage('Compile and Clean') {
-            steps {
-                sh "/opt/apache-maven-3.6.3/bin/mvn clean compile"
+   }
+   stages {
+      stage('Compile and Clean') {
+         steps {
+            sh "/opt/apache-maven-3.6.3/bin/mvn clean compile"
+         }
+      }
+      stage('Test') {
+         steps {
+            sh '/opt/apache-maven-3.6.3/bin/mvn test'
+         }
+         post {
+            always {
+               junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             }
-        }
-        stage('Test') {
-            steps {
-                sh '/opt/apache-maven-3.6.3/bin/mvn test'
-            }
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
-                }
-            }
-        }
+         }
+      }
+      stage('Copy Jar') {
+         steps {
+            sh 'cp target/*.jar .'
+         }
+      }
       stage('Build') {
          steps {
             script {
@@ -41,5 +46,5 @@ pipeline {
             }
          }
       }
-    }
+   }
 }
