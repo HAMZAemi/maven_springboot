@@ -23,11 +23,13 @@ pipeline {
             }
          }
       }
-      stage('Copy Jar') {
-         steps {
-            sh 'cp target/Inventory-Management-0.0.1-SNAPSHOT.jar'
-         }
-      }
+        stage('deploy') {
+            steps {
+                sh"/opt/apache-maven-3.6.3/bin/mvn dependency:tree"
+                sh "/opt/apache-maven-3.6.3/bin/mvn package"
+            }
+        }
+     
       stage('Build') {
          steps {
             script {
