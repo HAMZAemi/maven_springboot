@@ -2,9 +2,9 @@ pipeline {
    agent any
    environment {
       HARBOR_USERNAME = 'admin'
-      HARBOR_PASSWORD = 'Stage2023'
-      DOCKER_REGISTRY = '192.99.35.61'
-      IMAGE_NAME = "exosdata"
+      HARBOR_PASSWORD = 'stage'
+      DOCKER_REGISTRY = '192.99.35.69'
+      IMAGE_NAME = "library"
       IMAGE_TAG = "latest"
    }
    stages {
@@ -36,7 +36,7 @@ pipeline {
          steps {
             script {
                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ." // Construire l'image Docker
-               sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" // Ajouter une étiquette à l'image Docker
+               sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}/REPOSITORY[:${IMAGE_TAG}]" // Ajouter une étiquette à l'image Docker
             }
          }
       }
