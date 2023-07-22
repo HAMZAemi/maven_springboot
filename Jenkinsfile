@@ -35,13 +35,15 @@ pipeline {
             sh '/opt/apache-maven-3.6.3/bin/mvn clean deploy '
          }
       }
-      stage('Build Docker Image') {
+      stage('Build and push to harbor') {
          steps {
             script {
+               sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ." // Construire l'image Docker
+               sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}" // Ajouter une étiquette à l'image Docker
+
                withCredentials([usernamePassword(credentialsId: 'stage', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]) {
                   sh "docker login ${DOCKER_REGISTRY} -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD}" // Se connecter au référentiel Harbor avec les informations d'identification
-                  sh "docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}" // Récupérer l'image Docker depuis le référentiel Harbor
-                  sh "docker tag ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG} ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" // Ajouter une étiquette à l'image Docker
+                  sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}" // Pousser l'image Docker vers le référentiel Harbor
                }
             }
          }
@@ -51,6 +53,10 @@ pipeline {
             // Stop and remove any existing container with the same name
             sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker stop my_container || true'"
             sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker rm my_container || true'"
+
+            // Login to Harbor on the server and pull the Docker image
+            sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker login ${DOCKER_REGISTRY} -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD}'"
+            sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'"
 
             // Run the Docker container on the server
             sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker run -d -p 8088:8080 --name my_container ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'"
