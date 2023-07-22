@@ -42,7 +42,7 @@ pipeline {
                sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}" // Ajouter une étiquette à l'image Docker
 
                withCredentials([usernamePassword(credentialsId: 'stage', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]) {
-                 sh "echo ${HARBOR_PASSWORD} | docker login ${DOCKER_REGISTRY} -u ${HARBOR_USERNAME} --password-stdin http://${DOCKER_REGISTRY}" // Se connecter au référentiel Harbor avec les informations d'identification
+                 sh "echo ${HARBOR_PASSWORD} | docker login --username ${HARBOR_USERNAME} --password-stdin ${DOCKER_REGISTRY}" // Se connecter au référentiel Harbor avec les informations d'identification
                   sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}" // Pousser l'image Docker vers le référentiel Harbor
                }
             }
