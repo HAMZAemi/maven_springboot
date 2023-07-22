@@ -37,41 +37,23 @@ pipeline {
       }
       stage('Build Docker Image') {
          steps {
-            sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+            script {
+               withCredentials([usernamePassword(credentialsId: 'stage', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]) {
+                  sh "docker login ${DOCKER_REGISTRY} -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD}" // Se connecter au référentiel Harbor avec les informations d'identification
+                  sh "docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}" // Récupérer l'image Docker depuis le référentiel Harbor
+                  sh "docker tag ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG} ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" // Ajouter une étiquette à l'image Docker
+               }
+            }
          }
       }
-      stage('Push Docker Image to Server') {
-         steps {
-            // Save the Docker image as a tar file
-            sh "docker save ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} > ${DOCKER_IMAGE_NAME}-${DOCKER_IMAGE_TAG}.tar"
-
-            // Transfer the Docker image tar file to the server
-            sh "sshpass -p ${SERVER_PASSWORD} scp ${DOCKER_IMAGE_NAME}-${DOCKER_IMAGE_TAG}.tar ${SERVER_USERNAME}@${SERVER_IP}:~"
-
-            // Load the Docker image on the server
-            sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker load < ${DOCKER_IMAGE_NAME}-${DOCKER_IMAGE_TAG}.tar'"
-
-            // Remove the Docker image tar file from the Jenkins agent
-            sh "rm ${DOCKER_IMAGE_NAME}-${DOCKER_IMAGE_TAG}.tar"
-         }
-      }
-      stage('Run Docker Container on Server') {
+      stage('Deploy Docker Container on Server') {
          steps {
             // Stop and remove any existing container with the same name
             sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker stop my_container || true'"
             sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker rm my_container || true'"
 
             // Run the Docker container on the server
-            sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker run -d -p 8088:8080 --name my_container ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}'"
-
-            // Get the IP address of the server
-            sh "SERVER_IP=\$(sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'hostname -I | cut -d\" \" -f1')"
-
-            // Generate a link to the application
-            script {
-               def appUrl = "http://${SERVER_IP}:8088/myapp"
-               echo "Application URL: ${appUrl}"
-            }
+            sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker run -d -p 8088:8080 --name my_container ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'"
          }
       }
    }
