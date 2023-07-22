@@ -28,13 +28,13 @@ pipeline {
             }
          }
       }
-      stage('deploy to nexus') {
-         steps {
-            sh"/opt/apache-maven-3.6.3/bin/mvn dependency:tree"
-            sh "/opt/apache-maven-3.6.3/bin/mvn package"
-            sh '/opt/apache-maven-3.6.3/bin/mvn clean deploy '
-         }
-      }
+   //   stage('deploy to nexus') {
+     //    steps {
+     //       sh"/opt/apache-maven-3.6.3/bin/mvn dependency:tree"
+     //       sh "/opt/apache-maven-3.6.3/bin/mvn package"
+     //       sh '/opt/apache-maven-3.6.3/bin/mvn clean deploy '
+     //    }
+    //  }
       stage('Build and push to harbor') {
          steps {
             script {
@@ -56,7 +56,7 @@ pipeline {
 
     // Login to Harbor on the server and pull the Docker image
     withCredentials([usernamePassword(credentialsId: 'stage', usernameVariable: 'HARBOR_USERNAME', passwordVariable: 'HARBOR_PASSWORD')]) {
-      sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'echo ${HARBOR_PASSWORD} | docker login --username ${HARBOR_USERNAME} --password-stdin ${DOCKER_REGISTRY}'"
+      sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'echo ${HARBOR_PASSWORD} | docker login --username admin --password-stdin http://192.99.35.61'"
     }
     sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'"
 
