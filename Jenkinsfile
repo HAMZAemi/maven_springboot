@@ -48,7 +48,7 @@ pipeline {
             }
          }
       }
-   stage('Deploy Docker Container on Server') {
+  stage('Deploy Docker Container on Server') {
   steps {
     // Stop and remove any existing container with the same name
     sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker stop my_container || true'"
