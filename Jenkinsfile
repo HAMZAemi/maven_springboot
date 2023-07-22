@@ -55,7 +55,7 @@ pipeline {
             sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker rm my_container || true'"
 
             // Login to Harbor on the server and pull the Docker image
-            sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'echo ${HARBOR_PASSWORD} | docker login --username ${HARBOR_USERNAME} --password-stdin ${DOCKER_REGISTRY}'"
+            sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'echo ${HARBOR_PASSWORD} | docker login --username ${HARBOR_USERNAME} --password-stdin hhtp://${DOCKER_REGISTRY}'"
             sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'"
 
             // Run the Docker container on the server
