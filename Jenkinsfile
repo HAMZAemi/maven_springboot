@@ -51,11 +51,11 @@ pipeline {
   stage('Deploy Docker Container on Server') {
   steps {
     sshagent(credentials: ['${hamzapri}']) {
-        sh "echo ${HARBOR_PASSWORD} | docker login --username admin --password-stdin http://192.99.35.61"
-        sh "docker stop mycontainer || true"
-        sh "docker rm mycontainer || true"
-        sh "docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}"
-        sh "docker run -d -p 8084:8080 --name mycontainer ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}"
+        sh ' ssh root@192.99.35.69 "echo ${HARBOR_PASSWORD} | docker login --username admin --password-stdin http://192.99.35.61"'
+        sh ' ssh root@192.99.35.69 "docker stop mycontainer || true"'
+        sh ' ssh root@192.99.35.69 "docker rm mycontainer || true"'
+        sh ' ssh root@192.99.35.69 "docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}"'
+        sh ' ssh root@192.99.35.69 "docker run -d -p 8084:8080 --name mycontainer ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}"'
      }
   }
 }
