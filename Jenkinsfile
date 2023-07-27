@@ -58,8 +58,7 @@ pipeline {
       sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'echo ${HARBOR_PASSWORD} | docker login --username admin --password-stdin  http://192.99.35.61 '"
     }
     sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'"
-    sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker stop my_container || true'"
-    sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker rm my_container || true'"
+   
     // Run the Docker container on the server
     sh "sshpass -p ${SERVER_PASSWORD} ssh ${SERVER_USERNAME}@${SERVER_IP} 'docker run -d -p 8087:8080 --name mycontainer ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'"
   }
