@@ -48,15 +48,15 @@ pipeline {
             }
          }
       }
-  stage('Deploy Docker Container on Server') {
+stage('Deploy Docker Container on Server') {
   steps {
-    sshagent(credentials: ['${hamzapri}']) {
-        sh ' ssh root@192.99.35.69 "echo ${HARBOR_PASSWORD} | docker login --username admin --password-stdin http://192.99.35.61"'
-        sh ' ssh root@192.99.35.69 "docker stop mycontainer || true"'
-        sh ' ssh root@192.99.35.69 "docker rm mycontainer || true"'
-        sh ' ssh root@192.99.35.69 "docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}"'
-        sh ' ssh root@192.99.35.69 "docker run -d -p 8084:8080 --name mycontainer ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}"'
-     }
+    sh """
+    sshpass -p '${SERVER_PASSWORD}' ssh ${SERVER_USERNAME}@192.99.35.69 'echo ${HARBOR_PASSWORD} | docker login --username admin --password-stdin http://192.99.35.61'
+    sshpass -p '${SERVER_PASSWORD}' ssh ${SERVER_USERNAME}@192.99.35.69 'docker stop mycontainer || true'
+    sshpass -p '${SERVER_PASSWORD}' ssh ${SERVER_USERNAME}@192.99.35.69 'docker rm mycontainer || true'
+    sshpass -p '${SERVER_PASSWORD}' ssh ${SERVER_USERNAME}@192.99.35.69 'docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'
+    sshpass -p '${SERVER_PASSWORD}' ssh ${SERVER_USERNAME}@192.99.35.69 'docker run -d -p 8084:8080 --name mycontainer ${DOCKER_REGISTRY}/${IMAGE_NAME}/repository:${IMAGE_TAG}'
+    """
   }
 }
    }
