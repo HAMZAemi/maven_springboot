@@ -7,7 +7,7 @@ pipeline {
       IMAGE_NAME = "library"
       IMAGE_TAG = "latest"
       SERVER_USERNAME = 'root'
-      SERVER_PASSWORD = 'hamza'
+      SERVER_PASSWORD = 'A76fQ7fRxJFcg8TH'
       SERVER_IP = '192.99.35.69'
       DOCKER_IMAGE_NAME = "my-hamza-image"
       DOCKER_IMAGE_TAG = "latest"
